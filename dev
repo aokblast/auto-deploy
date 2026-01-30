@@ -1,0 +1,7 @@
+[freebsd-current]
+fbsd-current ansible_user=blast
+[freebsd-release]
+fbsd-rel ansible_user=blast
+[linux-dev]
+linux-dev ansible_user=blast
+

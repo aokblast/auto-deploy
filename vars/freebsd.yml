@@ -1,0 +1,3 @@
+install_path: /usr/local/
+sudo_group: wheel
+ssh_service_name: sshd

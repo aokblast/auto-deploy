@@ -1,0 +1,31 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Include OS-specific vars
+      include_vars:
+        file: "vars/{{ ansible_system | lower }}.yml"
+
+    - name: Add user with sudo
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: "{{ sudo_group }}"
+        append: yes
+
+    - name: Install sudo
+      ansible.builtin.package:
+        name: sudo
+        state: present
+
+    - name: Ensure wheel group exists
+      ansible.builtin.group:
+        name: wheel
+        state: present
+
+    - name: Enable wheel group sudo access
+      ansible.builtin.copy:
+        dest: "{{ install_path }}etc/sudoers.d/{{ sudo_group }}"
+        content: "{{ sudo_group }} ALL=(ALL) NOPASSWD:ALL\n"
+        owner: root
+        group: "{{ sudo_group }}"
+        mode: '0440'
+        validate: visudo -cf %s

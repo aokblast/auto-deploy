@@ -1,0 +1,3 @@
+install_path: /
+sudo_group: sudo
+ssh_service_name: ssh

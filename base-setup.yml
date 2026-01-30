@@ -1,0 +1,69 @@
+- hosts: all
+  tasks:
+    - name: Include OS-specific vars
+      include_vars:
+        file: "vars/{{ ansible_system | lower }}.yml"
+
+    - name: Add key to local file
+      vars:
+        local_pub_key: "{{ lookup('file', './files/server-ssh.pub') }}"
+      ansible.builtin.authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ local_pub_key }}"
+        state: present
+
+    - name: Ensure PasswordAuthentication is disabled
+      ansible.builtin.lineinfile:
+        path: "/etc/ssh/sshd_config"
+        regexp: '^#?PasswordAuthentication\s+'
+        line: 'PasswordAuthentication no'
+        state: present
+        backrefs: yes
+      become: true
+
+    - name: Reload SSH service
+      ansible.builtin.service:
+        name: "{{ ssh_service_name }}"
+        state: reloaded
+      become: true
+
+    - name: Install tmux and vim
+      ansible.builtin.package:
+        name:
+          - tmux
+          - git
+          - curl
+          - vim
+          - fish
+        state: present
+      become: true
+
+    # chezmoi is unavailable on apt-based distro, we download the pre-build binary manually
+    - name: Install chezmoi
+      ansible.builtin.shell: |
+        sh -c "$(curl -fsLS get.chezmoi.io)"
+      args:
+        creates: "./bin/chezmoi"
+
+    - name: Temporarily add deploy key
+      ansible.builtin.shell: |
+        eval "$(ssh-agent)"
+        echo "$DEPLOY_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+      environment:
+        DEPLOY_PRIVATE_KEY: "{{ lookup('env', 'DEPLOY_PRIVATE_KEY') }}"
+
+    - name: Download and apply dotfiles
+      ansible.builtin.shell: |
+        ./bin/chezmoi init git@github.com:aokblast/dotfiles.git
+        ./bin/chezmoi apply
+
+    - name: Delete ssh-key and kill ssh-agent
+      ansible.builtin.shell: |
+        ssh-add -D
+        killall ssh-agent
+
+    - name: Change user shell to fish
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        shell: "{{ install_path }}/bin/fish"
+      become: true
