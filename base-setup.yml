@@ -1,8 +1,5 @@
 - hosts: all
   tasks:
-    - name: Add hosts
-      include_tasks: ./templates/add_hosts.yml
-
     - name: Include OS-specific vars
       include_vars:
         file: "vars/{{ ansible_system | lower }}.yml"
@@ -44,7 +41,7 @@
       become: true
       when:
         - "'C' not in group_names"
-        - when: ansible_pkg_mgr == "apt"
+        - ansible_pkg_mgr == "apt"
 
     - name: Change user shell to fish
       ansible.builtin.user:
