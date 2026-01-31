@@ -12,12 +12,14 @@
         state: present
         backrefs: yes
       become: true
+      when: "'C' not in group_names"
 
     - name: Reload SSH service
       ansible.builtin.service:
         name: "{{ ssh_service_name }}"
         state: reloaded
       become: true
+      when: "'C' not in group_names"
 
     - name: Install tmux and vim
       ansible.builtin.package:
@@ -30,19 +32,23 @@
           - ripgrep
         state: present
       become: true
+      when: "'C' not in group_names"
 
     - name: Install killall
       ansible.builtin.package:
         name:
           - psmisc
-      when: ansible_pkg_mgr == "apt"
       become: true
+      when:
+        - "'C' not in group_names"
+        - ansible_pkg_mgr == "apt"
 
     - name: Change user shell to fish
       ansible.builtin.user:
         name: "{{ ansible_user }}"
         shell: "{{ install_path }}/bin/fish"
       become: true
+      when: "'C' not in group_names"
 
     - name: Install no-root setup
-      include_tasks: ./dotfiles.yml
+      include_tasks: ./templates/dotfiles.yml

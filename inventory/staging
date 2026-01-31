@@ -1,8 +1,4 @@
-[univ16a]
+[C]
 universe16a.freebsd.org ansible_user=aokblast
-
-[univ15a]
 universe15a.freebsd.org ansible_user=aokblast
-
-[univ14a]
 universe14a.freebsd.org ansible_user=aokblast

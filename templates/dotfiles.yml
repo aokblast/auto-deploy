@@ -7,17 +7,18 @@
   ansible.builtin.shell: |
     sh -c "$(curl -fsLS get.chezmoi.io)"
   args:
-    creates: "~/bin/chezmoi"
+    creates: "./bin/chezmoi"
 
 - name: Temporarily add deploy key
   ansible.builtin.shell:
     cmd: |
       ssh-agent -s > ~/.ssh-agent &&
       . ~/.ssh-agent &&
+      mkdir -p ~/.ssh &&
       ssh-keyscan github.com >> ~/.ssh/known_hosts &&
-      echo "$DEPLOY_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+      echo "$DOTFILE_PRIVATE_KEY" | tr -d '\r' | ssh-add -
   environment:
-    DEPLOY_PRIVATE_KEY: "{{ lookup('env', 'DEPLOY_PRIVATE_KEY') }}"
+    DOTFILE_PRIVATE_KEY: "{{ lookup('env', 'DOTFILE_PRIVATE_KEY') }}"
 
 - name: Download and apply dotfiles
   ansible.builtin.shell:
@@ -32,5 +33,3 @@
       ssh-add -D &&
       killall -q ssh-agent &&
       rm ~/.ssh-agent
-
-
