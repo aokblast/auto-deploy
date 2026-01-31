@@ -1,5 +1,7 @@
 - hosts: all
   become: true
+  vars:
+    TARGET_USER: "{{ lookup('env', 'TARGET_USER') }}"
   tasks:
     - name: Include OS-specific vars
       include_vars:
@@ -7,9 +9,10 @@
 
     - name: Add user with sudo
       ansible.builtin.user:
-        name: "{{ ansible_user }}"
+        name: "{{ TARGET_USER }}"
         groups: "{{ sudo_group }}"
         append: yes
+      ignore_errors: true
 
     - name: Install sudo
       ansible.builtin.package:
@@ -20,12 +23,22 @@
       ansible.builtin.group:
         name: wheel
         state: present
+      ignore_errors: true
 
     - name: Enable wheel group sudo access
       ansible.builtin.copy:
-        dest: "{{ install_path }}etc/sudoers.d/{{ sudo_group }}"
-        content: "{{ sudo_group }} ALL=(ALL) NOPASSWD:ALL\n"
+        dest: "{{ etc_prefix }}etc/sudoers.d/{{ sudo_group }}"
+        content: "%{{ sudo_group }} ALL=(ALL) NOPASSWD:ALL\n"
         owner: root
         group: "{{ sudo_group }}"
         mode: '0440'
         validate: visudo -cf %s
+      ignore_errors: true
+
+    - name: Add key to ansible user
+      vars:
+        local_pub_key: "{{ lookup('file', './files/server-ssh.pub') }}"
+      ansible.builtin.authorized_key:
+        user: "{{ TARGET_USER }}"
+        key: "{{ local_pub_key }}"
+        state: present

@@ -8,5 +8,5 @@ mail ansible_user=blast
 bgp ansible_user=blast
 
 [ElJonson]
-ElJonson ansible_user=freebsd
+ElJonson ansible_user=blast
 

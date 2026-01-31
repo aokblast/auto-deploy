@@ -1,3 +1,4 @@
-install_path: /
+install_path: /usr
+etc_prefix: /
 sudo_group: sudo
 ssh_service_name: ssh

@@ -1,3 +1,4 @@
 install_path: /usr/local/
+etc_prefix: /usr/local
 sudo_group: wheel
 ssh_service_name: sshd
