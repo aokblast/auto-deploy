@@ -32,5 +32,3 @@
       ssh-add -D &&
       killall -q ssh-agent &&
       rm ~/.ssh-agent
-
-

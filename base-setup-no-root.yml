@@ -1,4 +1,0 @@
-- hosts: all
-  tasks:
-    - name: Install no-root setup
-      include_tasks: ./dotfiles.yml

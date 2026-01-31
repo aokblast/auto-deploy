@@ -1,0 +1,36 @@
+- hosts: all
+  tasks:
+  - name: Include OS-specific vars
+	include_vars:
+	  file: "vars/{{ ansible_system | lower }}.yml"
+
+  # chezmoi is unavailable on apt-based distro, we download the pre-build binary manually
+  - name: Install chezmoi
+	ansible.builtin.shell: |
+	  sh -c "$(curl -fsLS get.chezmoi.io)"
+	args:
+	  creates: "~/bin/chezmoi"
+
+  - name: Temporarily add deploy key
+	ansible.builtin.shell:
+	  cmd: |
+		ssh-agent -s > ~/.ssh-agent &&
+		. ~/.ssh-agent &&
+		ssh-keyscan github.com >> ~/.ssh/known_hosts &&
+		echo "$DEPLOY_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+	environment:
+	  DEPLOY_PRIVATE_KEY: "{{ lookup('env', 'DEPLOY_PRIVATE_KEY') }}"
+
+  - name: Download and apply dotfiles
+	ansible.builtin.shell:
+	  cmd: |
+		. ~/.ssh-agent &&
+		./bin/chezmoi init --one-shot -i ./.ssh git@github.com:aokblast/dotfiles.git &&
+
+  - name: Delete ssh-key and kill ssh-agent
+	ansible.builtin.shell:
+	  cmd: |
+		. ~/.ssh-agent &&
+		ssh-add -D &&
+		killall -q ssh-agent &&
+		rm ~/.ssh-agent

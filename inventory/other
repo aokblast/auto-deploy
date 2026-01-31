@@ -1,12 +1,6 @@
-[tkoforward]
+[B]
 tko-forward ansible_user=blast
-
-[mail]
 mail ansible_user=blast
-
-[bgp]
 bgp ansible_user=blast
-
-[ElJonson]
 ElJonson ansible_user=blast
 
