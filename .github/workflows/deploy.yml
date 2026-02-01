@@ -12,6 +12,7 @@ on:
       - base-setup.yml
       - templates/dotfiles.yml
       - bootstrap-runner.yml
+  workflow_dispatch:
 
 jobs:
   base-public:
