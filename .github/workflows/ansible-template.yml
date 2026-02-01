@@ -1,5 +1,3 @@
-name: Update base setup
-
 on:
   workflow_call:        # This makes it reusable
     inputs:
