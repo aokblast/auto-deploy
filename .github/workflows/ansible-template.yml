@@ -12,6 +12,9 @@ on:
       runner_path:
         required: true
         type: string
+      inventory_file:
+        required: true
+        type: string
 
 jobs:
   ansible:
@@ -48,14 +51,6 @@ jobs:
           DOTFILE_PRIVATE_KEY: "${{ secrets.DOTFILE_KEY }}"
         run: |
           ansible-playbook \
-            -i inventory/other \
+            -i inventory/"${{ inputs.inventory_file }}" \
             --limit "${{ inputs.limits }}" \
-            ${{ inputs.runner_path }} || true
-          ansible-playbook \
-            -i inventory/staging \
-            --limit "${{ inputs.limits }}" \
-            ${{ inputs.runner_path }} || true
-          ansible-playbook \
-            -i inventory/dev \
-            --limit "${{ inputs.limits }}" \
-            ${{ inputs.runner_path }} || true
+            "${{ inputs.runner_path }}" || true
