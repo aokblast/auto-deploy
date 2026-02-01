@@ -1,0 +1,39 @@
+name: "Deploy Dev setup"
+
+on:
+  push:
+    branches:
+      - main
+      - testing/**
+    paths:
+      - inventory/**
+      - .github/workflows/ansible-template.yml
+      - .github/workflows/deploy-dev.yml
+      - dev-setup.yml
+      - bootstrap-runner.yml
+  workflow_dispatch:
+
+jobs:
+  base-public:
+    strategy:
+      matrix:
+        env: [dev]
+    uses: ./.github/workflows/ansible-template.yml
+    with:
+      limits: 'all:!A'
+      host_labels: ubuntu-latest   # optional, e.g., for self-hosted runner
+      runner_path: dev-setup.yml
+      inventory_file: "${{ matrix.env }}" 
+    secrets: inherit
+
+  base-homelab:
+    strategy:
+      matrix:
+        env: [dev]  
+    uses: ./.github/workflows/ansible-template.yml
+    with:
+      limits: 'A'
+      host_labels: homelab   # optional, e.g., for self-hosted runner
+      runner_path: dev-setup.yml
+      inventory_file: dev
+    secrets: inherit

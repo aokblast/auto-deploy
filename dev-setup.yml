@@ -1,0 +1,38 @@
+- hosts: all
+  tasks:
+    - name: Include OS-specific vars
+      include_vars:
+        file: "vars/{{ ansible_system | lower }}.yml"
+
+    - name: Install dev tools
+      ansible.builtin.package:
+        name:
+          - emacs-nox
+          - cmake
+          - ccache
+        state: present
+      become: true
+      when:
+      - "'C' not in group_names"
+
+    - name: Install dev tools for Debian based distro
+      ansible.builtin.package:
+        name:
+          - clangd-19
+          - build-essential
+          - ninja-build
+        state: present
+      become: true
+      when:
+      - "'C' not in group_names"
+      - ansible_pkg_mgr == "apt"
+
+    - name: Install dev tools for FreeBSD
+      ansible.builtin.package:
+        name:
+          - ninja
+        state: present
+      become: true
+      when:
+      - "'C' not in group_names"
+      - ansible_pkg_mgr == "pkg"
