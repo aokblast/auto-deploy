@@ -9,6 +9,9 @@ on:
       host_labels:
         required: false
         type: string
+      runner_path:
+        required: true
+        type: string
 
 jobs:
   ansible:
@@ -47,12 +50,12 @@ jobs:
           ansible-playbook \
             -i inventory/other \
             --limit "${{ inputs.limits }}" \
-            base-setup.yml || true
+            ${{ inputs.runner_path }} || true
           ansible-playbook \
             -i inventory/staging \
             --limit "${{ inputs.limits }}" \
-            base-setup.yml || true
+            ${{ inputs.runner_path }} || true
           ansible-playbook \
             -i inventory/dev \
             --limit "${{ inputs.limits }}" \
-            base-setup.yml || true
+            ${{ inputs.runner_path }} || true

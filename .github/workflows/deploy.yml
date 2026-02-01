@@ -1,4 +1,4 @@
-name: "Deploy on main branch changes"
+name: "Deploy base setup"
 
 on:
   push:
@@ -7,22 +7,24 @@ on:
       - testing
     paths:
       - inventory/**
-      - ./.github/workflows/base-template.yml
+      - .github/workflows/ansible-template.yml
       - base-setup.yml
       - templates/dotfiles.yml
       - bootstrap-runner.yml
 
 jobs:
   base-public:
-    uses: ./.github/workflows/base-template.yml
+    uses: ./.github/workflows/ansible-template.yml
     with:
       limits: 'all:!A'
       host_labels: ubuntu-latest   # optional, e.g., for self-hosted runner
+      runner_path: base-setup.yml
     secrets: inherit
 
   base-homelab:
-    uses: ./.github/workflows/base-template.yml
+    uses: ./.github/workflows/ansible-template.yml
     with:
       limits: 'A'
       host_labels: homelab   # optional, e.g., for self-hosted runner
+      runner_path: base-setup.yml
     secrets: inherit
