@@ -8,23 +8,32 @@ on:
     paths:
       - inventory/**
       - .github/workflows/ansible-template.yml
+      - .github/workflows/deploy.yml
       - base-setup.yml
       - templates/dotfiles.yml
       - bootstrap-runner.yml
 
 jobs:
   base-public:
+    strategy:
+      matrix:
+        env: [dev, staging, other]
     uses: ./.github/workflows/ansible-template.yml
     with:
       limits: 'all:!A'
       host_labels: ubuntu-latest   # optional, e.g., for self-hosted runner
       runner_path: base-setup.yml
+      inventory_file: "${{ matrix.env }}" 
     secrets: inherit
 
   base-homelab:
+    strategy:
+      matrix:
+        env: [dev, staging, other]  
     uses: ./.github/workflows/ansible-template.yml
     with:
       limits: 'A'
       host_labels: homelab   # optional, e.g., for self-hosted runner
       runner_path: base-setup.yml
+      inventory_file: "${{ matrix.env }}"
     secrets: inherit
