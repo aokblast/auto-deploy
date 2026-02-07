@@ -12,6 +12,31 @@
     when:
       - ansible_pkg_mgr == "apt"
 
+  - name: Install 1Password Cli for FreeBSD
+    ansible.builtin.package:
+      name:
+        - 1password-client2
+    become: true
+    when:
+      - ansible_pkg_mgr == "pkg"
+
+  - name: Install 1Password Cli for Debian based
+    ansible.builtin.shell: |
+      curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
+      gpg --yes --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg && \
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | \
+      tee /etc/apt/sources.list.d/1password.list && \
+      mkdir -p /etc/debsig/policies/AC2D62742012EA22/ && \
+      curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | \
+      tee /etc/debsig/policies/AC2D62742012EA22/1password.pol && \
+      mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 && \
+      curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
+      gpg --yes --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg && \
+      apt update && apt install 1password-cli
+    become: true
+    when:
+      - ansible_pkg_mgr == "apt"
+
   # chezmoi is unavailable on apt-based distro, we download the pre-build binary manually
   - name: Install chezmoi
     ansible.builtin.shell: |
@@ -24,6 +49,7 @@
       cmd: |
         ssh-agent -s > ~/.ssh-agent &&
         . ~/.ssh-agent &&
+        mkdir -p ~/.ssh &&
         ssh-keyscan github.com >> ~/.ssh/known_hosts &&
         echo "$DOTFILE_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     environment:
