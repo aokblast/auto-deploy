@@ -1,5 +1,4 @@
 [B]
 tko-forward ansible_user=blast
 mail ansible_user=blast
-ElJonson ansible_user=blast
 

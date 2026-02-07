@@ -1,3 +1,6 @@
+[B]
+ElJonson ansible_user=blast
+
 [C]
 universe16a.freebsd.org ansible_user=aokblast
 universe15a.freebsd.org ansible_user=aokblast
