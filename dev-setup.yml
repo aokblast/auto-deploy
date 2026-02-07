@@ -32,6 +32,7 @@
       ansible.builtin.package:
         name:
           - ninja
+          - libtool
         state: present
       become: true
       when:
