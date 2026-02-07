@@ -34,6 +34,7 @@
           - ninja
           - libtool
           - gmake
+          - ccache4
         state: present
       become: true
       when:
