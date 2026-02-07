@@ -21,6 +21,7 @@
           - clangd-19
           - build-essential
           - ninja-build
+          - libtool-bin
         state: present
       become: true
       when:
