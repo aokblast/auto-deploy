@@ -33,6 +33,7 @@
         name:
           - ninja
           - libtool
+          - gmake
         state: present
       become: true
       when:
