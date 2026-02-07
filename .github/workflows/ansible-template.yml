@@ -32,17 +32,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible
 
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
       - name: Bootstrap localhost
         env:
           DOTFILE_PRIVATE_KEY: "${{ secrets.DOTFILE_KEY }}"
         run: |
           ansible-playbook -i localhost, -c local ./bootstrap-runner.yml
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          OP_SERVICE_ACCOUNT_TOKEN="${{ secrets.SERVICE_TOKEN }}" op item get "${{ secrets.DEPLOY_KEY_ID }}" \
+          --vault "${{ secrets.VAULT_ID }}" --field "私密金鑰" --reveal | tr -d '"' | sed ':a;N;$!ba; s/^\n*//; s/\n*$//' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Run Code
         env:
@@ -52,3 +53,7 @@ jobs:
             -i inventory/"${{ inputs.inventory_file }}" \
             --limit "${{ inputs.limits }}" \
             "${{ inputs.runner_path }}" || true
+
+      - name: Delete SSH key
+        run: |
+          rm  ~/.ssh/id_rsa
