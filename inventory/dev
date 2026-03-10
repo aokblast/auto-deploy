@@ -3,3 +3,5 @@ fbsd-current ansible_user=blast
 fbsd-rel ansible_user=blast
 linux-dev ansible_user=blast
 
+[B]
+ElJonson ansible_user=blast
