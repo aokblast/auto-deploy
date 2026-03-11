@@ -1,4 +1,4 @@
 [B]
 tko-forward ansible_user=blast
 mail ansible_user=blast
-
+minio ansible_user=blast
