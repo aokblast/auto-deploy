@@ -1,5 +1,4 @@
 [B]
-ElJonson ansible_user=blast
 Fulgrim ansible_user=blast
 
 [C]
