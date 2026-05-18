@@ -1,5 +1,6 @@
 [B]
 ElJonson ansible_user=blast
+Fulgrim ansible_user=blast
 
 [C]
 universe16a.freebsd.org ansible_user=aokblast
