@@ -9,7 +9,6 @@
         name:
           - emacs-nox
           - cmake
-          - ccache
         state: present
       become: true
       when:
@@ -22,6 +21,7 @@
           - build-essential
           - ninja-build
           - libtool-bin
+          - ccache
         state: present
       become: true
       when:
